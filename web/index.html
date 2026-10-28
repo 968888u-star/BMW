@@ -3,111 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>自动发卡</title>
+<title>自动发卡平台</title>
 <style>
   :root{
-    --brand:#6366f1; --brand-2:#8b5cf6;
-    --bg:#f5f6fb; --text:#1f2430; --muted:#6b7280;
-    --border:#e6e8f0; --ok:#10b981; --danger:#ef4444; --warn:#f59e0b;
+    --primary:#6366f1; --primary-hover:#4f46e5;
+    --bg:#f8fafc; --text:#0f172a; --muted:#64748b;
+    --border:#e2e8f0; --ok:#10b981; --danger:#ef4444;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-    background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;
-    -webkit-font-smoothing:antialiased;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;
+    background-color:var(--bg); color:var(--text); min-height:100vh;
+    display:flex; flex-direction:column; position:relative; overflow-x:hidden;
+  }
+  body::before{
+    content:''; position:absolute; top:-10%; left:-10%; width:50%; height:50%;
+    background:radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+    z-index:-1; pointer-events:none;
+  }
+  body::after{
+    content:''; position:absolute; bottom:-10%; right:-10%; width:50%; height:50%;
+    background:radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%);
+    z-index:-1; pointer-events:none;
   }
   a{color:inherit;text-decoration:none}
-  .header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);
-    backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-  .header-inner{max-width:1100px;margin:0 auto;padding:14px 20px;
+  .header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.8);
+    backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+  .header-inner{max-width:1100px;margin:0 auto;padding:16px 20px;
     display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .logo{font-weight:800;font-size:17px;display:flex;align-items:center;gap:8px}
-  .header-actions{display:flex;gap:8px;align-items:center}
-  #app{flex:1;width:100%;max-width:1100px;margin:0 auto;padding:28px 20px 60px}
-  .hero{text-align:center;padding:20px 0 32px}
-  .hero h1{font-size:30px;letter-spacing:-.5px;margin-bottom:10px;
-    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  .logo{font-weight:800;font-size:18px;display:flex;align-items:center;gap:8px;
+    background:linear-gradient(135deg,var(--primary),#a855f7);
     -webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero p{color:var(--muted);font-size:14px}
-  .notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;
-    padding:12px 16px;border-radius:12px;font-size:13.5px;margin-bottom:22px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
-  .card{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;
-    display:flex;flex-direction:column;transition:transform .18s,box-shadow .18s}
-  .card:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(99,102,241,.13)}
-  .card-cover{height:112px;display:flex;align-items:center;justify-content:center;
-    font-size:46px;background:linear-gradient(135deg,#eef2ff,#f5f3ff);overflow:hidden}
+  .header-actions{display:flex;gap:10px;align-items:center}
+  
+  #app{flex:1;width:100%;max-width:1100px;margin:0 auto;padding:40px 20px 80px}
+  
+  .hero{text-align:center;padding:30px 0 50px;animation:fadeUp .5s ease}
+  .hero h1{font-size:36px;letter-spacing:-1px;margin-bottom:12px;font-weight:900}
+  .hero p{color:var(--muted);font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px}
+  .badge{background:#dcfce7;color:#166534;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:600}
+  
+  .notice{background:#fffbeb;border:1px solid #fde68a;color:#b45309;
+    padding:14px 18px;border-radius:12px;font-size:14px;margin-bottom:24px;display:flex;align-items:center;gap:8px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+  .card{background:rgba(255,255,255,.8);backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.5);border-radius:20px;overflow:hidden;
+    display:flex;flex-direction:column;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);}
+  .card:hover{transform:translateY(-6px);box-shadow:0 20px 40px -10px rgba(99,102,241,.2);border-color:#c7d2fe}
+  .card-cover{height:130px;display:flex;align-items:center;justify-content:center;
+    font-size:54px;background:linear-gradient(135deg,#eef2ff,#e0e7ff)}
   .card-cover img{width:100%;height:100%;object-fit:cover}
-  .card-body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
-  .card-body h3{font-size:15.5px;line-height:1.4}
-  .desc{font-size:12.5px;color:var(--muted);line-height:1.55;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px}
-  .card-foot{display:flex;align-items:baseline;justify-content:space-between;margin-top:auto}
-  .price{color:var(--danger);font-weight:800;font-size:19px}
-  .price::before{content:'¥';font-size:13px;margin-right:1px}
-  .stock{font-size:12px;color:var(--muted)}
+  .card-body{padding:20px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .card-body h3{font-size:17px;font-weight:700;line-height:1.4}
+  .desc{font-size:13px;color:var(--muted);line-height:1.6;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+  .price{color:var(--danger);font-weight:800;font-size:24px;display:flex;align-items:baseline}
+  .price::before{content:'¥';font-size:14px;margin-right:2px;font-weight:600}
+  .stock{font-size:12px;color:var(--muted);background:#f1f5f9;padding:4px 10px;border-radius:20px}
+
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
-    padding:10px 18px;border-radius:10px;border:none;cursor:pointer;font-size:14px;
+    padding:12px 20px;border-radius:12px;border:none;cursor:pointer;font-size:14px;
     font-weight:600;font-family:inherit;color:#fff;
-    background:linear-gradient(135deg,var(--brand),var(--brand-2));
-    transition:filter .15s,opacity .15s}
-  .btn:hover{filter:brightness(1.07)}
-  .btn:active{transform:translateY(1px)}
-  .btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
-  .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--border)}
-  .btn.ghost:hover{background:#f8f9ff;filter:none}
-  .btn.small{padding:6px 13px;font-size:12.5px;border-radius:8px}
-  .btn.big{width:100%;padding:15px;font-size:16px;margin-top:18px}
-  .buy{width:100%;margin-top:4px}
-  label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:600}
-  input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--border);
-    border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);
-    background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
-  input:focus,textarea:focus,select:focus{border-color:var(--brand);
-    box-shadow:0 0 0 3px rgba(99,102,241,.13)}
-  textarea{resize:vertical;line-height:1.6}
-  .modal-mask{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:100;
+    background:linear-gradient(135deg,var(--primary),#8b5cf6);
+    transition:all .2s; box-shadow:0 4px 12px rgba(99,102,241,.2)}
+  .btn:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 16px rgba(99,102,241,.3)}
+  .btn:active{transform:translateY(1px);box-shadow:none}
+  .btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(1);box-shadow:none}
+  .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--border);box-shadow:none}
+  .btn.ghost:hover{background:#f8fafc;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+  .btn.small{padding:8px 16px;font-size:13px;border-radius:10px}
+  .btn.big{width:100%;padding:18px;font-size:16px;border-radius:14px;margin-top:24px}
+  .buy{width:100%;margin-top:12px;background:linear-gradient(135deg,#1e293b,#0f172a)}
+
+  label{display:block;font-size:13px;color:var(--muted);margin:16px 0 8px;font-weight:600}
+  input,textarea,select{width:100%;padding:12px 16px;border:1px solid var(--border);
+    border-radius:12px;font-size:14px;font-family:inherit;color:var(--text);
+    background:#f8fafc;outline:none;transition:all .2s}
+  input:focus,textarea:focus,select:focus{background:#fff;border-color:var(--primary);
+    box-shadow:0 0 0 4px rgba(99,102,241,.15)}
+
+  .modal-mask{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:100;
     display:flex;align-items:center;justify-content:center;padding:20px;
-    backdrop-filter:blur(3px);animation:fade .18s ease}
-  @keyframes fade{from{opacity:0}to{opacity:1}}
-  .modal{background:#fff;border-radius:18px;padding:24px;width:100%;max-width:400px;
-    max-height:88vh;overflow-y:auto;animation:pop .2s cubic-bezier(.2,.9,.3,1.2)}
-  @keyframes pop{from{transform:scale(.94);opacity:.5}to{transform:scale(1);opacity:1}}
-  .modal h3{font-size:17px;margin-bottom:6px}
-  .modal-actions{display:flex;gap:10px;margin-top:22px}
+    backdrop-filter:blur(8px);animation:fadeIn .2s ease}
+  .modal{background:#fff;border-radius:24px;padding:32px;width:100%;max-width:420px;
+    max-height:88vh;overflow-y:auto;animation:scaleUp .3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)}
+  .modal h3{font-size:20px;margin-bottom:8px}
+  .modal-actions{display:flex;gap:12px;margin-top:28px}
   .modal-actions .btn{flex:1}
-  .total{margin-top:16px;font-size:14px;color:var(--muted)}
-  .total strong{color:var(--danger);font-size:19px}
-  .order-wrap{max-width:620px;margin:0 auto}
-  .order-wrap h2{font-size:20px;margin-bottom:18px}
-  .order-info{background:#fff;border:1px solid var(--border);border-radius:16px;
-    padding:6px 20px}
+  .total{margin-top:20px;font-size:14px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;background:#f8fafc;padding:16px;border-radius:12px}
+  .total strong{color:var(--danger);font-size:24px;font-weight:800}
+
+  .order-wrap{max-width:680px;margin:0 auto}
+  .order-wrap h2{font-size:24px;margin-bottom:24px;font-weight:800}
+  .order-info{background:#fff;border:1px solid var(--border);border-radius:20px;
+    padding:0 24px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.02)}
   .order-info>div{display:flex;justify-content:space-between;gap:16px;
-    padding:13px 0;border-bottom:1px solid var(--border);font-size:14px}
+    padding:18px 0;border-bottom:1px dashed var(--border);font-size:14px}
   .order-info>div:last-child{border-bottom:none}
-  .order-info span{color:var(--muted);flex-shrink:0}
-  .order-info b{text-align:right;word-break:break-all}
-  .st-pending{color:var(--warn)}
-  .st-paid{color:var(--ok)}
-  .st-expired,.st-closed{color:var(--muted)}
-  .cards-box{background:#fff;border:1px solid var(--border);border-radius:16px;
-    padding:20px;margin-top:18px}
-  .cards-box h3{font-size:15px;margin-bottom:14px;color:var(--ok)}
-  .card-code{display:flex;align-items:center;gap:10px;background:#f8f9ff;
-    border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:9px}
-  .card-code code{flex:1;font-size:13.5px;word-break:break-all;
-    font-family:ui-monospace,Menlo,Consolas,monospace}
-  .hint{text-align:center;font-size:12.5px;color:var(--muted);margin-top:12px}
-  .empty{text-align:center;color:var(--muted);padding:60px 20px;font-size:14px}
-  .loading{text-align:center;color:var(--muted);padding:60px 20px;font-size:14px}
-  .footer{border-top:1px solid var(--border);padding:26px 20px;text-align:center;
+  .order-info span{color:var(--muted)}
+  .order-info b{text-align:right;word-break:break-all;font-weight:600}
+
+  .st-pending{color:#d97706;background:#fef3c7;padding:4px 10px;border-radius:6px;font-size:12px}
+  .st-paid{color:#059669;background:#d1fae5;padding:4px 10px;border-radius:6px;font-size:12px}
+  .st-expired,.st-closed{color:#64748b;background:#f1f5f9;padding:4px 10px;border-radius:6px;font-size:12px}
+
+  .cards-box{background:#fff;border:1px solid var(--border);border-radius:20px;
+    padding:28px;margin-top:24px;box-shadow:0 10px 30px -10px rgba(0,0,0,.05)}
+  .cards-box h3{font-size:16px;margin-bottom:20px;color:var(--ok);display:flex;align-items:center;gap:8px}
+  .card-code{display:flex;align-items:center;gap:12px;background:#f0fdf4;
+    border:1px solid #bbf7d0;border-radius:12px;padding:14px 18px;margin-bottom:12px}
+  .card-code code{flex:1;font-size:14px;word-break:break-all;
+    font-family:ui-monospace,Menlo,Consolas,monospace;color:#064e3b;font-weight:600}
+  .hint{text-align:center;font-size:13px;color:var(--muted);margin-top:16px}
+
+  .empty{text-align:center;color:var(--muted);padding:80px 20px;font-size:15px;
+    background:#fff;border-radius:20px;border:1px dashed var(--border)}
+  .loading{text-align:center;color:var(--muted);padding:80px 20px;font-size:14px}
+  .footer{border-top:1px solid var(--border);padding:30px 20px;text-align:center;
     font-size:13px;color:var(--muted);background:#fff}
-  .footer-sub{margin-top:6px;font-size:12px;opacity:.7}
+  
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes scaleUp{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+
   @media(max-width:520px){
-    .hero h1{font-size:23px}
-    #app{padding:20px 14px 40px}
-    .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-    .card-cover{height:88px;font-size:34px}
+    .hero h1{font-size:26px}
+    .hero{padding:10px 0 30px}
+    #app{padding:20px 16px 60px}
+    .grid{grid-template-columns:1fr}
+    .card{flex-direction:row;align-items:center;padding:16px;border-radius:16px}
+    .card-cover{height:80px;width:80px;border-radius:12px;font-size:36px;flex-shrink:0}
+    .card-body{padding:0 0 0 16px;gap:8px}
+    .card-foot{margin-top:4px}
+    .price{font-size:20px}
+    .buy{margin-top:8px;padding:8px;font-size:13px}
+    .order-info{padding:0 16px;border-radius:16px}
+    .cards-box{padding:20px 16px;border-radius:16px}
   }
 </style>
 </head>
@@ -126,27 +161,19 @@
 <main id="app"></main>
 
 <footer class="footer">
-  <div id="contact"></div>
-  <div class="footer-sub">© 自动发卡平台 · 支付成功后系统自动发货</div>
+  <div id="contact">联系客服</div>
+  <div style="margin-top:8px;font-size:12px;opacity:.6">© 自动发卡平台 · 安全稳定 · 自动发货</div>
 </footer>
 
 <div id="modal"></div>
 
 <script>
-/* ============================================================
- *  ⚠️ 部署前必改：把下面地址换成你的 Worker 地址
- *  （末尾不带斜杠）
- * ============================================================ */
+// 你的专属接口和后台地址（已为你填好）
 const API_BASE = 'https://bmw-shop-api.968888u.workers.dev';
-
-/* 后台链接（可选，跨域部署时指定） */
-const ADMIN_URL = 'https://card-shop-admin.pages.dev';
-
-/* ============================================================ */
+const ADMIN_URL = 'https://bmw-admin.pages.dev';
 
 const $ = (s, r = document) => r.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"']/g,
-  m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 const yuan = c => (Number(c || 0) / 100).toFixed(2);
 
 let site = { siteName: '自动发卡', siteNotice: '', contact: '' };
@@ -169,7 +196,7 @@ async function api(path, opts = {}) {
     site = await api('/site');
     document.title = site.siteName;
     $('#siteName').textContent = site.siteName;
-    $('#contact').textContent = site.contact || '';
+    if(site.contact) $('#contact').textContent = site.contact;
   } catch (e) {}
   await refreshProducts();
   $('#queryBtn').onclick = openQueryModal;
@@ -190,15 +217,14 @@ function render() {
 
 function renderHome() {
   const app = $('#app');
-  const notice = site.siteNotice
-    ? `<div class="notice">📢 ${esc(site.siteNotice)}</div>` : '';
+  const notice = site.siteNotice ? `<div class="notice"><span>📢</span> ${esc(site.siteNotice)}</div>` : '';
   const grid = products.length
     ? products.map(p => `
       <div class="card">
         <div class="card-cover">${coverHtml(p.cover)}</div>
         <div class="card-body">
           <h3>${esc(p.name)}</h3>
-          <p class="desc">${esc(p.description || '')}</p>
+          <p class="desc">${esc(p.description || '暂无描述')}</p>
           <div class="card-foot">
             <span class="price">${yuan(p.price)}</span>
             <span class="stock">库存 ${p.stock}</span>
@@ -208,12 +234,12 @@ function renderHome() {
           </button>
         </div>
       </div>`).join('')
-    : `<div class="empty">暂无在售商品</div>`;
+    : `<div class="empty">🛒 暂无在售商品，请稍后再来看看吧~</div>`;
 
   app.innerHTML = `
     <div class="hero">
       <h1>${esc(site.siteName)}</h1>
-      <p>全天候自动发货 · 支付成功即刻出卡</p>
+      <p>全天候自动发货 <span class="badge">安全可靠</span></p>
     </div>
     ${notice}
     <div class="grid">${grid}</div>`;
@@ -224,29 +250,27 @@ function renderHome() {
 }
 
 function coverHtml(cover) {
-  if (cover && /^https?:\/\//i.test(cover)) {
-    return `<img src="${esc(cover)}" alt="" loading="lazy">`;
-  }
-  return esc(cover || '🛒');
+  if (cover && /^https?:\/\//i.test(cover)) return `<img src="${esc(cover)}" alt="" loading="lazy">`;
+  return esc(cover || '🎁');
 }
 
 function openBuyModal(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
-
   const m = $('#modal');
   m.innerHTML = `
     <div class="modal-mask">
       <div class="modal">
-        <h3>购买 ${esc(p.name)}</h3>
+        <h3>购买确认</h3>
+        <p style="font-size:14px;color:var(--muted);margin-top:4px">${esc(p.name)}</p>
         <label>购买数量</label>
         <input type="number" id="qty" value="1" min="1" max="${Math.min(100, p.stock)}">
-        <label>联系方式（选填，便于售后）</label>
+        <label>联系方式（选填）</label>
         <input type="text" id="contact" placeholder="邮箱 / QQ / 手机号">
-        <div class="total">应付金额：<strong id="total">¥${yuan(p.price)}</strong></div>
+        <div class="total">应付金额 <strong id="total">¥${yuan(p.price)}</strong></div>
         <div class="modal-actions">
           <button class="btn ghost" id="cancel">取消</button>
-          <button class="btn" id="confirm">提交订单</button>
+          <button class="btn" id="confirm">去支付</button>
         </div>
       </div>
     </div>`;
@@ -254,7 +278,7 @@ function openBuyModal(id) {
   const qtyEl = $('#qty', m);
   const totalEl = $('#total', m);
   const readQty = () => Math.max(1, Math.min(p.stock, Math.floor(Number(qtyEl.value) || 1)));
-
+  
   qtyEl.oninput = () => { totalEl.textContent = '¥' + yuan(p.price * readQty()); };
   $('#cancel', m).onclick = () => { m.innerHTML = ''; };
   $('#confirm', m).onclick = async () => {
@@ -263,17 +287,12 @@ function openBuyModal(id) {
     try {
       const order = await api('/orders', {
         method: 'POST',
-        body: {
-          productId: p.id,
-          quantity: readQty(),
-          contact: $('#contact', m).value.trim(),
-        },
+        body: { productId: p.id, quantity: readQty(), contact: $('#contact', m).value.trim() },
       });
       m.innerHTML = '';
       location.hash = '#/order/' + order.orderNo;
     } catch (e) {
-      alert(e.message);
-      btn.disabled = false; btn.textContent = '提交订单';
+      alert(e.message); btn.disabled = false; btn.textContent = '去支付';
     }
   };
 }
@@ -287,7 +306,7 @@ async function renderOrder(orderNo) {
   try {
     order = await api('/orders/' + encodeURIComponent(orderNo));
   } catch (e) {
-    app.innerHTML = `<div class="empty">订单不存在或链接已失效</div>`;
+    app.innerHTML = `<div class="empty">❌ 订单不存在或链接已失效</div>`;
     return;
   }
 
@@ -298,14 +317,14 @@ async function renderOrder(orderNo) {
         <div><span>订单号</span><b>${esc(order.orderNo)}</b></div>
         <div><span>商品名称</span><b>${esc(order.productName)}</b></div>
         <div><span>购买数量</span><b>${order.quantity}</b></div>
-        <div><span>订单金额</span><b class="price">${yuan(order.amount)}</b></div>
+        <div><span>订单金额</span><b class="price" style="font-size:16px">¥${yuan(order.amount)}</b></div>
         <div><span>订单状态</span><b class="st-${order.status}">${STATUS_TEXT[order.status] || order.status}</b></div>
       </div>`;
 
   if (order.status === 'paid') {
     html += `
       <div class="cards-box">
-        <h3>🎉 发货成功，请及时保存您的卡密</h3>
+        <h3>✅ 发货成功，请及时保存</h3>
         ${order.cards.map((c, i) => `
           <div class="card-code">
             <code>${esc(c.code)}</code>
@@ -315,7 +334,7 @@ async function renderOrder(orderNo) {
   } else if (order.status === 'pending') {
     html += `
       <button class="btn big" id="payBtn">立即支付 ¥${yuan(order.amount)}</button>
-      <p class="hint">演示环境：点击后模拟支付成功并自动发货</p>`;
+      <p class="hint">点击即模拟支付成功并自动发货</p>`;
   } else {
     html += `<p class="hint">该订单${STATUS_TEXT[order.status] || '状态未知'}，请重新下单</p>`;
   }
@@ -326,16 +345,13 @@ async function renderOrder(orderNo) {
   const payBtn = $('#payBtn', app);
   if (payBtn) {
     payBtn.onclick = async () => {
-      payBtn.disabled = true;
-      payBtn.textContent = '支付处理中…';
+      payBtn.disabled = true; payBtn.textContent = '支付处理中…';
       try {
         await api('/orders/' + encodeURIComponent(orderNo) + '/pay', { method: 'POST' });
         await refreshProducts();
         renderOrder(orderNo);
       } catch (e) {
-        alert(e.message);
-        payBtn.disabled = false;
-        payBtn.textContent = '立即支付 ¥' + yuan(order.amount);
+        alert(e.message); payBtn.disabled = false; payBtn.textContent = '立即支付 ¥' + yuan(order.amount);
       }
     };
   }
@@ -344,8 +360,8 @@ async function renderOrder(orderNo) {
     b.onclick = () => {
       const code = order.cards[Number(b.dataset.i)].code;
       navigator.clipboard.writeText(code).then(() => {
-        b.textContent = '已复制';
-        setTimeout(() => (b.textContent = '复制'), 1500);
+        b.textContent = '已复制'; b.classList.add('ghost');
+        setTimeout(() => { b.textContent = '复制'; b.classList.remove('ghost'); }, 1500);
       }).catch(() => alert('复制失败，请手动选中复制'));
     };
   });
@@ -357,7 +373,7 @@ function openQueryModal() {
     <div class="modal-mask">
       <div class="modal">
         <h3>订单查询</h3>
-        <label>请输入订单号</label>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">输入订单号找回您的卡密</p>
         <input id="qno" placeholder="粘贴您的订单号">
         <div class="modal-actions">
           <button class="btn ghost" id="qCancel">取消</button>
@@ -365,7 +381,6 @@ function openQueryModal() {
         </div>
       </div>
     </div>`;
-
   const input = $('#qno', m);
   input.focus();
   $('#qCancel', m).onclick = () => { m.innerHTML = ''; };
