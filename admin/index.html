@@ -3,89 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>管理后台 - 自动发卡</title>
+<title>管理后台</title>
 <style>
-  :root{--primary:#6366f1;--bg:#f8fafc;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--danger:#ef4444}
+  :root{--primary:#111;--bg:#f9f9f9;--text:#111;--muted:#888;--border:#e5e5e5;--danger:#ef4444;--success:#10b981}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,"PingFang SC",sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+  body{font-family:-apple-system,"PingFang SC",sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased}
   
-  .header{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;
+  .header{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;
     display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:10}
-  .logo{font-weight:800;color:var(--text);font-size:16px;display:flex;align-items:center;gap:8px}
-  .header button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600}
-  .header button:hover{color:var(--danger)}
+  .logo{font-weight:800;color:var(--text);font-size:16px;display:flex;align-items:center;gap:10px;letter-spacing:-0.5px}
+  .logo span{background:var(--text);color:#fff;padding:4px 8px;border-radius:6px;font-size:12px}
+  .header button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;transition:color .2s}
+  .header button:hover{color:var(--text)}
   
   .layout{display:flex;min-height:calc(100vh - 64px)}
-  .side{width:220px;background:#1e293b;padding:24px 16px;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
-  .side a{padding:12px 16px;border-radius:10px;color:#94a3b8;cursor:pointer;font-weight:600;font-size:14px;transition:all .2s}
-  .side a.active,.side a:hover{background:rgba(255,255,255,.1);color:#fff}
+  .side{width:240px;background:#fff;border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+  .side a{padding:12px 16px;border-radius:10px;color:var(--muted);cursor:pointer;font-weight:600;font-size:14px;transition:all .2s;display:flex;align-items:center;gap:10px}
+  .side a.active,.side a:hover{background:var(--bg);color:var(--text)}
   
-  .main{flex:1;padding:32px;overflow:auto}
-  h2{font-size:22px;margin-bottom:24px;font-weight:800;color:var(--text)}
+  .main{flex:1;padding:40px;overflow:auto}
+  h2{font-size:24px;margin-bottom:32px;font-weight:800;letter-spacing:-0.5px}
   
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;
     border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;
-    color:#fff;background:var(--primary);transition:all .2s;box-shadow:0 4px 10px rgba(99,102,241,.2)}
-  .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
-  .btn.small{padding:6px 12px;font-size:12px;border-radius:8px;box-shadow:none}
-  .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--border);box-shadow:none}
-  .btn.ghost:hover{background:#f1f5f9}
-  .btn.danger{background:#fee2e2;color:var(--danger);box-shadow:none}
-  .btn.danger:hover{background:#fecaca}
-  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    color:#fff;background:var(--text);transition:all .2s}
+  .btn:hover{opacity:.8;transform:translateY(-1px)}
+  .btn.small{padding:6px 14px;font-size:12px;border-radius:8px}
+  .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--border)}
+  .btn.ghost:hover{background:var(--bg)}
+  .btn.danger{background:#fef2f2;color:var(--danger);border:1px solid #fee2e2}
+  .btn.danger:hover{background:#fee2e2}
+  .btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
   
   .bar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;align-items:center}
   input,select,textarea{width:100%;padding:12px 16px;border:1px solid var(--border);
     border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:#fff;transition:border-color .2s}
-  input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+  input:focus,select:focus,textarea:focus{border-color:#999}
   textarea{resize:vertical;min-height:120px;line-height:1.6;font-family:ui-monospace,Consolas,monospace}
-  .bar input,.bar select{width:auto;min-width:180px}
+  .bar input,.bar select{width:auto;min-width:200px}
   
-  .table-wrap{background:#fff;border-radius:16px;border:1px solid var(--border);overflow-x:auto;box-shadow:0 4px 6px -1px rgba(0,0,0,.02)}
+  /* Bento Grid Dashboard */
+  .bento-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:20px;margin-bottom:32px}
+  .bento-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:28px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.02);position:relative;overflow:hidden;transition:all .3s}
+  .bento-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,0.05)}
+  .bento-card.large{grid-column:span 2}
+  .bento-card.dark{background:var(--text);color:#fff;border:none}
+  .bento-card.dark .l{color:#a1a1aa}
+  
+  .bento-card .l{color:var(--muted);font-size:14px;font-weight:600;margin-bottom:12px}
+  .bento-card .v{font-size:36px;font-weight:900;letter-spacing:-1px}
+  .bento-card .v span{font-size:16px;color:var(--muted);font-weight:600}
+  
+  .table-wrap{background:#fff;border-radius:16px;border:1px solid var(--border);overflow-x:auto}
   table{width:100%;border-collapse:collapse}
-  th,td{padding:16px;text-align:left;border-bottom:1px solid var(--border);font-size:13.5px}
-  th{background:#f8fafc;color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  th,td{padding:20px;text-align:left;border-bottom:1px solid var(--border);font-size:14px}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
   tr:last-child td{border-bottom:none}
-  tr:hover td{background:#f8fafc}
+  tr:hover td{background:#fafafa}
   
-  .tag{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block}
+  .tag{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block}
   .tag.pending{background:#fef3c7;color:#92400e}
   .tag.paid{background:#d1fae5;color:#065f46}
-  .tag.closed,.tag.expired{background:#f1f5f9;color:#475569}
-  .tag.used{background:#f1f5f9;color:#94a3b8}
-  .tag.free{background:#dbeafe;color:#1e40af}
+  .tag.closed,.tag.expired{background:var(--bg);color:var(--muted)}
+  .tag.used{background:var(--bg);color:#999}
+  .tag.free{background:#e0e7ff;color:#3730a3}
   
-  .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
-  .stat{background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px;
-    box-shadow:0 4px 6px -1px rgba(0,0,0,.02)}
-  .stat .v{font-size:32px;font-weight:900;color:var(--text);margin-top:8px}
-  .stat .l{color:var(--muted);font-size:13px;font-weight:600}
-  
-  .modal-mask{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:100;
+  .modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;
     display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
-  .modal{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:480px;max-height:90vh;overflow:auto;
+  .modal{background:#fff;border-radius:24px;padding:32px;width:100%;max-width:480px;max-height:90vh;overflow:auto;
     box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}
-  .modal h3{font-size:18px;margin-bottom:20px}
-  .field{margin:16px 0}
+  .modal h3{font-size:20px;margin-bottom:24px;font-weight:800}
+  .field{margin:20px 0}
   .field label{display:block;font-size:13px;color:var(--text);margin-bottom:8px;font-weight:600}
-  .modal-actions{display:flex;gap:12px;margin-top:28px}
-  .modal-actions .btn{flex:1;padding:12px}
-  .err{color:var(--danger);font-size:13px;margin-top:10px;min-height:18px}
+  .modal-actions{display:flex;gap:12px;margin-top:32px}
+  .modal-actions .btn{flex:1;padding:14px}
+  .err{color:var(--danger);font-size:13px;margin-top:10px;min-height:18px;font-weight:600}
   
-  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#f8fafc}
-  .login-box{background:#fff;border:1px solid var(--border);border-radius:24px;padding:40px;width:100%;max-width:400px;
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#f9f9f9;
+    background-image: radial-gradient(#e5e5e5 1px, transparent 1px); background-size: 20px 20px;}
+  .login-box{background:#fff;border:1px solid var(--border);border-radius:24px;padding:48px;width:100%;max-width:400px;
     box-shadow:0 20px 40px -10px rgba(0,0,0,.05)}
-  .login-box h1{font-size:24px;margin-bottom:8px;font-weight:900}
-  .login-box p{color:var(--muted);font-size:14px;margin-bottom:28px}
+  .login-box h1{font-size:28px;margin-bottom:8px;font-weight:900;letter-spacing:-0.5px}
+  .login-box p{color:var(--muted);font-size:14px;margin-bottom:32px}
   
-  .empty{text-align:center;color:var(--muted);padding:60px}
+  .empty{text-align:center;color:var(--muted);padding:80px;font-size:14px}
+  
+  @media(max-width:900px){
+    .bento-grid{grid-template-columns:1fr}
+    .bento-card.large{grid-column:span 1}
+  }
   @media(max-width:768px){
     .layout{flex-direction:column}
-    .side{width:100%;flex-direction:row;overflow-x:auto;padding:12px}
+    .side{width:100%;flex-direction:row;overflow-x:auto;padding:12px;border-right:none;border-bottom:1px solid var(--border)}
     .side a{white-space:nowrap}
-    .main{padding:20px 16px}
-    .stat .v{font-size:24px}
-    th,td{padding:12px}
+    .main{padding:24px 16px}
+    .bento-card .v{font-size:28px}
+    th,td{padding:16px}
   }
 </style>
 </head>
@@ -94,7 +108,6 @@
 <div id="modal"></div>
 
 <script>
-// 你的专属接口地址（已为你填好）
 const API_BASE = 'https://bmw-shop-api.968888u.workers.dev';
 
 const $ = (s,r=document)=>r.querySelector(s);
@@ -122,11 +135,11 @@ function renderLogin(errMsg=''){
   $('#app').innerHTML = `
     <div class="login-wrap"><div class="login-box">
       <h1>欢迎回来</h1>
-      <p>登录以管理您的发卡平台</p>
+      <p>登录以管理您的发卡业务</p>
       <div class="field"><label>管理员账号</label><input id="u" autocomplete="username" placeholder="admin"></div>
       <div class="field"><label>密码</label><input id="p" type="password" autocomplete="current-password" placeholder="••••••••"></div>
       <div class="err" id="err">${esc(errMsg)}</div>
-      <button class="btn" style="width:100%;margin-top:16px;padding:14px" id="loginBtn">立即登录</button>
+      <button class="btn" style="width:100%;margin-top:16px;padding:16px" id="loginBtn">立即登录</button>
     </div></div>`;
   const go = async () => {
     const btn = $('#loginBtn');
@@ -153,7 +166,7 @@ const MENU = [['dashboard','📊 数据概览'],['products','📦 商品管理']
 function renderShell(){
   $('#app').innerHTML = `
     <div class="header">
-      <div class="logo"><span style="background:var(--primary);color:#fff;padding:4px 8px;border-radius:6px">Pro</span> 发卡控制台</div>
+      <div class="logo"><span>PRO</span> 发卡控制台</div>
       <button id="logoutBtn">退出登录</button>
     </div>
     <div class="layout">
@@ -166,7 +179,7 @@ function renderShell(){
 }
 
 function renderTab(){
-  $('#main').innerHTML = `<div class="loading" style="color:var(--muted)">数据加载中…</div>`;
+  $('#main').innerHTML = `<div class="empty">数据加载中…</div>`;
   if(current==='dashboard') return renderDashboard();
   if(current==='products') return renderProducts();
   if(current==='cards') return renderCards();
@@ -179,12 +192,26 @@ async function renderDashboard(){
     const s = await api('/admin/stats');
     $('#main').innerHTML = `
       <h2>数据概览</h2>
-      <div class="stats">
-        <div class="stat"><div class="l">总收入</div><div class="v" style="color:var(--danger)">¥${yuan(s.revenue)}</div></div>
-        <div class="stat"><div class="l">已支付订单</div><div class="v">${s.paidOrderCount}</div></div>
-        <div class="stat"><div class="l">商品数量</div><div class="v">${s.productCount}</div></div>
-        <div class="stat"><div class="l">卡密库存 / 总量</div><div class="v">${s.cardTotal - s.cardUsed} <span style="font-size:16px;color:var(--muted)">/ ${s.cardTotal}</span></div></div>
-      </div>`;
+      <div class="bento-grid">
+        <div class="bento-card large dark">
+          <div class="l">总销售收入</div>
+          <div class="v">¥${yuan(s.revenue)}</div>
+        </div>
+        <div class="bento-card">
+          <div class="l">已支付订单</div>
+          <div class="v">${s.paidOrderCount} <span>笔</span></div>
+        </div>
+        <div class="bento-card">
+          <div class="l">商品数量</div>
+          <div class="v">${s.productCount} <span>个</span></div>
+        </div>
+        <div class="bento-card large">
+          <div class="l">卡密库存储备</div>
+          <div class="v" style="color:var(--success)">${s.cardTotal - s.cardUsed} <span>可用 / ${s.cardTotal} 总计</span></div>
+        </div>
+      </div>
+      <p style="color:var(--muted);font-size:13px;text-align:center">数据实时更新 · 保护商家资产安全</p>
+    `;
   }catch(e){ $('#main').innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
 }
 
@@ -196,11 +223,11 @@ async function renderProducts(){
       <div class="bar"><button class="btn" id="addBtn">+ 添加新商品</button></div>
       <div class="table-wrap"><table><thead><tr><th>商品名称</th><th>价格</th><th>库存</th><th>操作</th></tr></thead>
       <tbody>${list.length ? list.map(p => `
-        <tr><td><b>${esc(p.name)}</b><br><span style="color:var(--muted);font-size:12px">${esc(p.description||'-')}</span></td>
-        <td style="color:var(--danger);font-weight:700">¥${yuan(p.price)}</td>
+        <tr><td><b>${esc(p.name)}</b><br><span style="color:var(--muted);font-size:12px;margin-top:4px;display:inline-block">${esc(p.description||'暂无描述')}</span></td>
+        <td style="font-weight:700">¥${yuan(p.price)}</td>
         <td>${p.stock > 0 ? `<span class="tag free">${p.stock}</span>` : `<span class="tag used">0</span>`}</td>
         <td><button class="btn small ghost" data-edit="${p.id}">编辑</button>
-        <button class="btn small danger" style="margin-left:6px" data-del="${p.id}">删除</button></td></tr>`).join('')
+        <button class="btn small danger" style="margin-left:8px" data-del="${p.id}">删除</button></td></tr>`).join('')
         : `<tr><td colspan="4" class="empty">暂无商品，点击上方添加</td></tr>`}</tbody></table></div>`;
     $('#addBtn').onclick = () => productModal();
     $('#main').onclick = e => {
@@ -217,7 +244,7 @@ function productModal(p){
   $('#modal').innerHTML = `
     <div class="modal-mask"><div class="modal">
       <h3>${isEdit?'编辑商品':'添加新商品'}</h3>
-      <div class="field"><label>商品名称 *</label><input id="m_name" value="${esc(p.name)}" placeholder="例如：一个月高级会员"></div>
+      <div class="field"><label>商品名称 *</label><input id="m_name" value="${esc(p.name)}" placeholder="例如：高级会员月卡"></div>
       <div class="field"><label>售价（元）*</label><input id="m_price" type="number" step="0.01" value="${p.price?(p.price/100).toFixed(2):''}" placeholder="9.90"></div>
       <div class="field"><label>商品描述</label><textarea id="m_desc" style="min-height:80px" placeholder="简单介绍一下商品内容...">${esc(p.description||'')}</textarea></div>
       <div class="field"><label>封面（图片URL或Emoji）</label><input id="m_cover" value="${esc(p.cover||'🎁')}"></div>
@@ -252,11 +279,11 @@ async function renderCards(){
       <div class="bar">
         <select id="prodSel">${products.map(p => `<option value="${p.id}" ${p.id===cardProductId?'selected':''}>${esc(p.name)}</option>`).join('')}</select>
         <button class="btn" id="addCards">+ 添加卡密</button>
-        <span style="color:var(--muted);font-size:13px;background:#fff;padding:8px 12px;border-radius:8px;border:1px solid var(--border)">剩余库存 <b>${free}</b> 张</span>
+        <span style="color:var(--muted);font-size:13px;background:#fff;padding:10px 16px;border-radius:10px;border:1px solid var(--border)">可用库存 <b style="color:var(--success)">${free}</b> 张</span>
       </div>
       <div class="table-wrap"><table><thead><tr><th>卡密内容</th><th>状态</th><th>关联订单</th><th>操作</th></tr></thead>
       <tbody>${cards.length ? cards.map(c => `
-        <tr><td style="font-family:monospace;font-size:13px">${esc(c.code)}</td>
+        <tr><td style="font-family:monospace;font-size:14px;font-weight:600">${esc(c.code)}</td>
         <td><span class="tag ${c.used?'used':'free'}">${c.used?'已售出':'待售'}</span></td>
         <td style="color:var(--muted);font-size:12px">${esc(c.orderNo||'-')}</td>
         <td>${c.used?'-':'<button class="btn small danger" data-card="'+c.id+'">删除</button>'}</td></tr>`).join('')
@@ -267,7 +294,7 @@ async function renderCards(){
       $('#modal').innerHTML = `
         <div class="modal-mask"><div class="modal">
           <h3>批量添加卡密</h3>
-          <div class="field"><label>每行输入一张卡密，自动去重</label><textarea id="codes" placeholder="AAAA-1111\nBBBB-2222"></textarea></div>
+          <div class="field"><label>每行输入一张卡密，系统自动去重</label><textarea id="codes" placeholder="AAAA-1111\nBBBB-2222"></textarea></div>
           <div class="err" id="c_err"></div>
           <div class="modal-actions"><button class="btn ghost" id="c_cancel">取消</button><button class="btn" id="c_save">确认添加</button></div>
         </div></div>`;
@@ -298,11 +325,11 @@ async function renderOrders(){
         <input id="orderKw" placeholder="搜订单号 / 联系方式" value="${esc(kw)}">
         <button class="btn ghost" id="orderSearch">搜索</button>
       </div>
-      <div class="table-wrap"><table><thead><tr><th>订单号 / 时间</th><th>商品</th><th>金额</th><th>状态</th><th>联系方式</th><th>操作</th></tr></thead>
+      <div class="table-wrap"><table><thead><tr><th>订单信息</th><th>商品</th><th>金额</th><th>状态</th><th>联系方式</th><th>操作</th></tr></thead>
       <tbody>${list.length ? list.map(o=>`
-        <tr><td><b style="font-family:monospace">${esc(o.orderNo)}</b><br><span style="color:var(--muted);font-size:12px">${new Date(o.createdAt).toLocaleString()}</span></td>
+        <tr><td><b style="font-family:monospace;font-size:14px">${esc(o.orderNo)}</b><br><span style="color:var(--muted);font-size:12px">${new Date(o.createdAt).toLocaleString()}</span></td>
         <td>${esc(o.productName)} <span style="color:var(--muted)">x${o.quantity}</span></td>
-        <td style="color:var(--danger);font-weight:700">¥${yuan(o.amount)}</td>
+        <td style="font-weight:800">¥${yuan(o.amount)}</td>
         <td><span class="tag ${o.status}">${STATUS[o.status]||o.status}</span></td>
         <td style="color:var(--muted)">${esc(o.contact||'-')}</td>
         <td>${o.status==='pending'?`<button class="btn small ghost" data-close="${o.orderNo}">关闭</button> `:''}
@@ -322,15 +349,15 @@ async function renderSettings(){
     const s = await api('/admin/settings');
     $('#main').innerHTML = `
       <h2>系统设置</h2>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:32px;max-width:600px">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:20px;padding:32px;max-width:600px">
         <div class="field"><label>站点名称</label><input id="s_name" value="${esc(s.siteName)}"></div>
         <div class="field"><label>首页公告（留空不显示）</label><textarea id="s_notice" style="min-height:80px">${esc(s.siteNotice||'')}</textarea></div>
         <div class="field"><label>客服联系方式（页脚）</label><input id="s_contact" value="${esc(s.contact||'')}"></div>
-        <hr style="border:none;border-top:1px dashed var(--border);margin:24px 0">
+        <hr style="border:none;border-top:1px dashed var(--border);margin:32px 0">
         <div class="field"><label>管理员用户名</label><input id="s_user" value="${esc(s.adminUsername)}"></div>
         <div class="field"><label>新密码（不改请留空）</label><input id="s_pass" type="password" placeholder="输入新密码"></div>
         <div class="err" id="s_err"></div>
-        <button class="btn" id="s_save" style="margin-top:10px">保存设置</button>
+        <button class="btn" id="s_save" style="margin-top:16px;width:100%;padding:14px">保存设置</button>
       </div>`;
     $('#s_save').onclick = async () => {
       try{
