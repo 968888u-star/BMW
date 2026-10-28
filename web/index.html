@@ -6,141 +6,147 @@
 <title>自动发卡平台</title>
 <style>
   :root{
-    --primary:#6366f1; --primary-hover:#4f46e5;
-    --bg:#f8fafc; --text:#0f172a; --muted:#64748b;
-    --border:#e2e8f0; --ok:#10b981; --danger:#ef4444;
+    --bg: #09090b; --card-bg: rgba(255, 255, 255, 0.03);
+    --text: #f4f4f5; --muted: #a1a1aa;
+    --border: rgba(255, 255, 255, 0.1); --border-hover: rgba(255, 255, 255, 0.25);
+    --primary: #6366f1; --primary-glow: rgba(99, 102, 241, 0.5);
+    --price: #10b981; --danger: #ef4444;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;
     background-color:var(--bg); color:var(--text); min-height:100vh;
-    display:flex; flex-direction:column; position:relative; overflow-x:hidden;
+    display:flex; flex-direction:column; overflow-x:hidden;
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; background-position: center top;
   }
   body::before{
-    content:''; position:absolute; top:-10%; left:-10%; width:50%; height:50%;
-    background:radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
-    z-index:-1; pointer-events:none;
-  }
-  body::after{
-    content:''; position:absolute; bottom:-10%; right:-10%; width:50%; height:50%;
-    background:radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%);
+    content:''; position:absolute; top:-20%; left:50%; transform:translateX(-50%);
+    width:80%; height:50%; background:radial-gradient(ellipse at center, rgba(99,102,241,0.15) 0%, transparent 70%);
     z-index:-1; pointer-events:none;
   }
   a{color:inherit;text-decoration:none}
-  .header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.8);
+  
+  .header{position:sticky;top:0;z-index:50;background:rgba(9,9,11,.7);
     backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
-  .header-inner{max-width:1100px;margin:0 auto;padding:16px 20px;
+  .header-inner{max-width:1100px;margin:0 auto;padding:18px 20px;
     display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .logo{font-weight:800;font-size:18px;display:flex;align-items:center;gap:8px;
-    background:linear-gradient(135deg,var(--primary),#a855f7);
+  .logo{font-weight:800;font-size:18px;display:flex;align-items:center;gap:8px;letter-spacing:-0.5px}
+  .header-actions{display:flex;gap:12px;align-items:center}
+  
+  #app{flex:1;width:100%;max-width:1100px;margin:0 auto;padding:60px 20px 100px}
+  
+  .hero{text-align:center;padding:20px 0 60px;animation:fadeUp .6s ease}
+  .hero h1{font-size:42px;letter-spacing:-1.5px;margin-bottom:16px;font-weight:900;
+    background:linear-gradient(to bottom right, #fff, #a1a1aa);
     -webkit-background-clip:text;background-clip:text;color:transparent}
-  .header-actions{display:flex;gap:10px;align-items:center}
+  .hero p{color:var(--muted);font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px}
+  .badge{background:rgba(16,185,129,.1);color:#10b981;border:1px solid rgba(16,185,129,.2);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
   
-  #app{flex:1;width:100%;max-width:1100px;margin:0 auto;padding:40px 20px 80px}
-  
-  .hero{text-align:center;padding:30px 0 50px;animation:fadeUp .5s ease}
-  .hero h1{font-size:36px;letter-spacing:-1px;margin-bottom:12px;font-weight:900}
-  .hero p{color:var(--muted);font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px}
-  .badge{background:#dcfce7;color:#166534;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:600}
-  
-  .notice{background:#fffbeb;border:1px solid #fde68a;color:#b45309;
-    padding:14px 18px;border-radius:12px;font-size:14px;margin-bottom:24px;display:flex;align-items:center;gap:8px}
+  .notice{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:#fcd34d;
+    padding:14px 20px;border-radius:12px;font-size:14px;margin-bottom:32px;display:flex;align-items:center;gap:10px}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
-  .card{background:rgba(255,255,255,.8);backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,.5);border-radius:20px;overflow:hidden;
-    display:flex;flex-direction:column;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow:0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);}
-  .card:hover{transform:translateY(-6px);box-shadow:0 20px 40px -10px rgba(99,102,241,.2);border-color:#c7d2fe}
-  .card-cover{height:130px;display:flex;align-items:center;justify-content:center;
-    font-size:54px;background:linear-gradient(135deg,#eef2ff,#e0e7ff)}
-  .card-cover img{width:100%;height:100%;object-fit:cover}
-  .card-body{padding:20px;display:flex;flex-direction:column;gap:12px;flex:1}
-  .card-body h3{font-size:17px;font-weight:700;line-height:1.4}
-  .desc{font-size:13px;color:var(--muted);line-height:1.6;
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
+  .card{background:var(--card-bg);border:1px solid var(--border);border-radius:20px;
+    overflow:hidden;display:flex;flex-direction:column;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter:blur(10px);position:relative}
+  .card::after{content:'';position:absolute;inset:0;border-radius:20px;padding:2px;
+    background:linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none}
+  .card:hover{transform:translateY(-4px);border-color:var(--border-hover);
+    box-shadow:0 20px 40px -10px rgba(0,0,0,0.5), 0 0 20px var(--primary-glow)}
+  .card-cover{height:140px;display:flex;align-items:center;justify-content:center;
+    font-size:56px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent)}
+  .card-cover img{width:100%;height:100%;object-fit:cover;opacity:0.9}
+  .card-body{padding:24px;display:flex;flex-direction:column;gap:14px;flex:1}
+  .card-body h3{font-size:18px;font-weight:700;letter-spacing:-0.3px}
+  .desc{font-size:13.5px;color:var(--muted);line-height:1.6;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
   .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
-  .price{color:var(--danger);font-weight:800;font-size:24px;display:flex;align-items:baseline}
-  .price::before{content:'¥';font-size:14px;margin-right:2px;font-weight:600}
-  .stock{font-size:12px;color:var(--muted);background:#f1f5f9;padding:4px 10px;border-radius:20px}
+  .price{color:var(--price);font-weight:900;font-size:28px;display:flex;align-items:baseline;letter-spacing:-0.5px}
+  .price::before{content:'¥';font-size:16px;margin-right:4px;font-weight:600;color:var(--muted)}
+  .stock{font-size:12px;color:var(--muted);background:rgba(255,255,255,0.05);padding:4px 12px;border-radius:20px;border:1px solid var(--border)}
 
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
-    padding:12px 20px;border-radius:12px;border:none;cursor:pointer;font-size:14px;
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:12px 24px;border-radius:12px;border:none;cursor:pointer;font-size:14px;
     font-weight:600;font-family:inherit;color:#fff;
-    background:linear-gradient(135deg,var(--primary),#8b5cf6);
-    transition:all .2s; box-shadow:0 4px 12px rgba(99,102,241,.2)}
-  .btn:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 16px rgba(99,102,241,.3)}
-  .btn:active{transform:translateY(1px);box-shadow:none}
-  .btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(1);box-shadow:none}
-  .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--border);box-shadow:none}
-  .btn.ghost:hover{background:#f8fafc;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-  .btn.small{padding:8px 16px;font-size:13px;border-radius:10px}
-  .btn.big{width:100%;padding:18px;font-size:16px;border-radius:14px;margin-top:24px}
-  .buy{width:100%;margin-top:12px;background:linear-gradient(135deg,#1e293b,#0f172a)}
+    background:#fff;color:#000; transition:all .2s}
+  .btn:hover{filter:brightness(0.9);transform:translateY(-1px);box-shadow:0 4px 15px rgba(255,255,255,0.2)}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.3;cursor:not-allowed;filter:grayscale(1);box-shadow:none}
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+  .btn.ghost:hover{background:rgba(255,255,255,0.05);box-shadow:none}
+  .btn.small{padding:8px 16px;font-size:13px;border-radius:8px}
+  .btn.big{width:100%;padding:18px;font-size:16px;border-radius:14px;margin-top:24px;background:linear-gradient(135deg, var(--primary), #a855f7);color:#fff;border:none;box-shadow:0 0 20px var(--primary-glow)}
+  .btn.big:hover{box-shadow:0 0 30px var(--primary-glow);filter:brightness(1.1)}
+  .buy{width:100%;margin-top:16px;background:var(--text);color:#000}
 
   label{display:block;font-size:13px;color:var(--muted);margin:16px 0 8px;font-weight:600}
-  input,textarea,select{width:100%;padding:12px 16px;border:1px solid var(--border);
+  input,textarea,select{width:100%;padding:14px 16px;border:1px solid var(--border);
     border-radius:12px;font-size:14px;font-family:inherit;color:var(--text);
-    background:#f8fafc;outline:none;transition:all .2s}
-  input:focus,textarea:focus,select:focus{background:#fff;border-color:var(--primary);
-    box-shadow:0 0 0 4px rgba(99,102,241,.15)}
+    background:rgba(0,0,0,0.2);outline:none;transition:all .2s}
+  input:focus,textarea:focus,select:focus{background:rgba(0,0,0,0.5);border-color:var(--primary);
+    box-shadow:0 0 0 4px rgba(99,102,241,.2)}
 
-  .modal-mask{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:100;
+  .modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;
     display:flex;align-items:center;justify-content:center;padding:20px;
     backdrop-filter:blur(8px);animation:fadeIn .2s ease}
-  .modal{background:#fff;border-radius:24px;padding:32px;width:100%;max-width:420px;
+  .modal{background:#18181b;border:1px solid var(--border);border-radius:24px;padding:32px;width:100%;max-width:420px;
     max-height:88vh;overflow-y:auto;animation:scaleUp .3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)}
-  .modal h3{font-size:20px;margin-bottom:8px}
+    box-shadow:0 25px 50px -12px rgba(0,0,0,0.5)}
+  .modal h3{font-size:22px;margin-bottom:8px}
   .modal-actions{display:flex;gap:12px;margin-top:28px}
   .modal-actions .btn{flex:1}
-  .total{margin-top:20px;font-size:14px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;background:#f8fafc;padding:16px;border-radius:12px}
-  .total strong{color:var(--danger);font-size:24px;font-weight:800}
+  .total{margin-top:24px;font-size:14px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);padding:20px;border-radius:16px;border:1px solid var(--border)}
+  .total strong{color:var(--price);font-size:28px;font-weight:900}
 
   .order-wrap{max-width:680px;margin:0 auto}
-  .order-wrap h2{font-size:24px;margin-bottom:24px;font-weight:800}
-  .order-info{background:#fff;border:1px solid var(--border);border-radius:20px;
-    padding:0 24px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.02)}
+  .order-wrap h2{font-size:28px;margin-bottom:24px;font-weight:800;letter-spacing:-0.5px}
+  .order-info{background:var(--card-bg);border:1px solid var(--border);border-radius:20px;
+    padding:0 24px; backdrop-filter:blur(10px)}
   .order-info>div{display:flex;justify-content:space-between;gap:16px;
-    padding:18px 0;border-bottom:1px dashed var(--border);font-size:14px}
+    padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:14px}
   .order-info>div:last-child{border-bottom:none}
   .order-info span{color:var(--muted)}
   .order-info b{text-align:right;word-break:break-all;font-weight:600}
 
-  .st-pending{color:#d97706;background:#fef3c7;padding:4px 10px;border-radius:6px;font-size:12px}
-  .st-paid{color:#059669;background:#d1fae5;padding:4px 10px;border-radius:6px;font-size:12px}
-  .st-expired,.st-closed{color:#64748b;background:#f1f5f9;padding:4px 10px;border-radius:6px;font-size:12px}
+  .st-pending{color:#fcd34d;background:rgba(245,158,11,.1);padding:4px 12px;border-radius:6px;font-size:12px;border:1px solid rgba(245,158,11,.2)}
+  .st-paid{color:#34d399;background:rgba(16,185,129,.1);padding:4px 12px;border-radius:6px;font-size:12px;border:1px solid rgba(16,185,129,.2)}
+  .st-expired,.st-closed{color:#a1a1aa;background:rgba(255,255,255,.05);padding:4px 12px;border-radius:6px;font-size:12px;border:1px solid var(--border)}
 
-  .cards-box{background:#fff;border:1px solid var(--border);border-radius:20px;
-    padding:28px;margin-top:24px;box-shadow:0 10px 30px -10px rgba(0,0,0,.05)}
-  .cards-box h3{font-size:16px;margin-bottom:20px;color:var(--ok);display:flex;align-items:center;gap:8px}
-  .card-code{display:flex;align-items:center;gap:12px;background:#f0fdf4;
-    border:1px solid #bbf7d0;border-radius:12px;padding:14px 18px;margin-bottom:12px}
-  .card-code code{flex:1;font-size:14px;word-break:break-all;
-    font-family:ui-monospace,Menlo,Consolas,monospace;color:#064e3b;font-weight:600}
-  .hint{text-align:center;font-size:13px;color:var(--muted);margin-top:16px}
+  .cards-box{background:linear-gradient(180deg, rgba(16,185,129,0.05), transparent);border:1px solid rgba(16,185,129,0.2);border-radius:20px;
+    padding:28px;margin-top:24px}
+  .cards-box h3{font-size:16px;margin-bottom:20px;color:#34d399;display:flex;align-items:center;gap:8px}
+  .card-code{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.4);
+    border:1px solid rgba(16,185,129,0.3);border-radius:12px;padding:16px 20px;margin-bottom:12px}
+  .card-code code{flex:1;font-size:15px;word-break:break-all;
+    font-family:ui-monospace,Menlo,Consolas,monospace;color:#fff;font-weight:600;letter-spacing:1px}
+  .card-code .copy{background:rgba(16,185,129,0.2);color:#34d399;border:none}
+  .card-code .copy:hover{background:rgba(16,185,129,0.3)}
+  .hint{text-align:center;font-size:13px;color:var(--muted);margin-top:20px}
 
   .empty{text-align:center;color:var(--muted);padding:80px 20px;font-size:15px;
-    background:#fff;border-radius:20px;border:1px dashed var(--border)}
+    background:rgba(255,255,255,0.02);border-radius:20px;border:1px dashed var(--border)}
   .loading{text-align:center;color:var(--muted);padding:80px 20px;font-size:14px}
-  .footer{border-top:1px solid var(--border);padding:30px 20px;text-align:center;
-    font-size:13px;color:var(--muted);background:#fff}
+  .footer{border-top:1px solid var(--border);padding:32px 20px;text-align:center;
+    font-size:13px;color:var(--muted);background:#09090b}
   
   @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  @keyframes scaleUp{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes scaleUp{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
 
   @media(max-width:520px){
-    .hero h1{font-size:26px}
-    .hero{padding:10px 0 30px}
-    #app{padding:20px 16px 60px}
+    .hero h1{font-size:32px}
+    #app{padding:30px 16px 60px}
     .grid{grid-template-columns:1fr}
     .card{flex-direction:row;align-items:center;padding:16px;border-radius:16px}
     .card-cover{height:80px;width:80px;border-radius:12px;font-size:36px;flex-shrink:0}
     .card-body{padding:0 0 0 16px;gap:8px}
-    .card-foot{margin-top:4px}
-    .price{font-size:20px}
-    .buy{margin-top:8px;padding:8px;font-size:13px}
+    .price{font-size:22px}
+    .buy{margin-top:8px;padding:10px;font-size:13px}
     .order-info{padding:0 16px;border-radius:16px}
     .cards-box{padding:20px 16px;border-radius:16px}
   }
@@ -150,7 +156,7 @@
 
 <header class="header">
   <div class="header-inner">
-    <div class="logo">🛒 <span id="siteName">自动发卡</span></div>
+    <div class="logo">🛍️ <span id="siteName">自动发卡</span></div>
     <div class="header-actions">
       <button class="btn ghost small" id="queryBtn">订单查询</button>
       <a class="btn ghost small" id="adminLink" href="#" target="_blank">管理后台</a>
@@ -162,13 +168,12 @@
 
 <footer class="footer">
   <div id="contact">联系客服</div>
-  <div style="margin-top:8px;font-size:12px;opacity:.6">© 自动发卡平台 · 安全稳定 · 自动发货</div>
+  <div style="margin-top:8px;font-size:12px;opacity:.4">© 自动发卡平台 · 安全稳定 · 自动发货</div>
 </footer>
 
 <div id="modal"></div>
 
 <script>
-// 你的专属接口和后台地址（已为你填好）
 const API_BASE = 'https://bmw-shop-api.968888u.workers.dev';
 const ADMIN_URL = 'https://bmw-admin.pages.dev';
 
@@ -234,7 +239,7 @@ function renderHome() {
           </button>
         </div>
       </div>`).join('')
-    : `<div class="empty">🛒 暂无在售商品，请稍后再来看看吧~</div>`;
+    : `<div class="empty">🛒 暂无在售商品</div>`;
 
   app.innerHTML = `
     <div class="hero">
@@ -270,7 +275,7 @@ function openBuyModal(id) {
         <div class="total">应付金额 <strong id="total">¥${yuan(p.price)}</strong></div>
         <div class="modal-actions">
           <button class="btn ghost" id="cancel">取消</button>
-          <button class="btn" id="confirm">去支付</button>
+          <button class="btn big" style="margin-top:0" id="confirm">去支付</button>
         </div>
       </div>
     </div>`;
@@ -317,7 +322,7 @@ async function renderOrder(orderNo) {
         <div><span>订单号</span><b>${esc(order.orderNo)}</b></div>
         <div><span>商品名称</span><b>${esc(order.productName)}</b></div>
         <div><span>购买数量</span><b>${order.quantity}</b></div>
-        <div><span>订单金额</span><b class="price" style="font-size:16px">¥${yuan(order.amount)}</b></div>
+        <div><span>订单金额</span><b class="price" style="font-size:18px">¥${yuan(order.amount)}</b></div>
         <div><span>订单状态</span><b class="st-${order.status}">${STATUS_TEXT[order.status] || order.status}</b></div>
       </div>`;
 
@@ -360,8 +365,8 @@ async function renderOrder(orderNo) {
     b.onclick = () => {
       const code = order.cards[Number(b.dataset.i)].code;
       navigator.clipboard.writeText(code).then(() => {
-        b.textContent = '已复制'; b.classList.add('ghost');
-        setTimeout(() => { b.textContent = '复制'; b.classList.remove('ghost'); }, 1500);
+        b.textContent = '已复制';
+        setTimeout(() => { b.textContent = '复制'; }, 1500);
       }).catch(() => alert('复制失败，请手动选中复制'));
     };
   });
@@ -377,7 +382,7 @@ function openQueryModal() {
         <input id="qno" placeholder="粘贴您的订单号">
         <div class="modal-actions">
           <button class="btn ghost" id="qCancel">取消</button>
-          <button class="btn" id="qGo">查询</button>
+          <button class="btn big" style="margin-top:0" id="qGo">查询</button>
         </div>
       </div>
     </div>`;
