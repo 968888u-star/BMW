@@ -1,0 +1,13 @@
+{
+  "name": "card-shop",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "cf:dev": "wrangler dev --config cloudflare/wrangler.toml",
+    "cf:deploy": "wrangler deploy --config cloudflare/wrangler.toml",
+    "db:init": "wrangler d1 execute card-shop --config cloudflare/wrangler.toml --remote --file=./cloudflare/schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}
