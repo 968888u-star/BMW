@@ -1,0 +1,9 @@
+name = "card-shop-api"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# 部署前把 database_id 替换成 `wrangler d1 create card-shop` 输出的 ID
+[[d1_databases]]
+binding = "DB"
+database_name = "card-shop"
+database_id = "请替换为你的-database-id"
